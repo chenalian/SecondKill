@@ -1,0 +1,7 @@
+#应用名称
+spring:
+  application:
+    name: secondkill
+#端口号
+server:
+  port: 8080

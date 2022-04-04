@@ -1,0 +1,14 @@
+#应用名称
+spring:
+  application:
+    name: secondkill
+  datasource:
+    data-password: root
+    data-username: 123456
+    url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#端口号
+server:
+  port: 8080
+
+#mysql数据库配置

@@ -8,6 +8,7 @@ import java.util.Collections;
 
 public class CodeGenerator {
     static final String URL = "jdbc:mysql://localhost:3306/exam?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8";
+
     public static void main(String[] args) {
         String projectPath = "/D:/Java/MybatisPlusDemo";//获取项目路径,推荐手动更改，不用自动获取的
 
@@ -33,7 +34,7 @@ public class CodeGenerator {
                 })
                 //策略配置
                 .strategyConfig(builder -> {
-                    builder.addInclude("admin","exam_manage","replay")
+                    builder.addInclude("admin", "exam_manage", "replay")
                             //.addTablePrefix("t_")//表前缀
                             .serviceBuilder().formatServiceFileName("%sService")//去掉Service的 "I" 前缀
                             .controllerBuilder().enableRestStyle()//restful开启
