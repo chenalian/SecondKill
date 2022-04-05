@@ -6,9 +6,9 @@ spring:
 #    关闭缓存
     cache: false
   datasource:
-    data-username: root
-    data-password: 123456
-    url: jdbc:mysql://localhost:3306/secondkill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/secondkill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
   #  连接池名
@@ -27,18 +27,16 @@ spring:
       connection-timeout: 30000
   #  测试连接是否可用的查询语句
       connection-test-query: SELECT 1
+
 #端口号
 server:
   port: 8080
 
 
-## Mybatis-plus配置
-#mybatis-plus:
-##  配置Mapper映射文件
-#  mapper-locations: classpath*:/mapper/*Mapper.xml
-##  配置MyBatis数据返回类型别名（默认别名是类名）
-#  type-aliases-package: alian.secondkill.pojo
-### Mybatis SQL 打印(方法接口所在的包，不是Mapper.xml所在的包)
-#logging:
-#  level:
-#     alian.secondkill.mapper: debug
+# Mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  type-aliases-package: alian.secondkill
+logging:
+  level:
+    alian.secondkill.mapper: debug

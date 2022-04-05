@@ -17,7 +17,12 @@ import lombok.ToString;
 @AllArgsConstructor
 public enum RespBeanEnum {
     SUCCESS(200,"success"),
-    ERROR(500,"服务端日常")
+    ERROR(500,"服务端异常"),
+
+    LOGIN_EMPTY_ERROR(50001,"用户名或者密码为空"),
+    LOGIN_MOBILE_ERROR(50002,"用户名不和法"),
+    LOGIN_NOT_EXIST_ERROR(50003,"用户不存在"),
+    LOGIN_PASSWD_ERROR(50004,"密码错误")
     ;
 
     private final Integer code;

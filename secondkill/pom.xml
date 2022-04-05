@@ -40,7 +40,7 @@
         </dependency>
         <!-- mysql驱动-->
         <dependency>
-            <version>8.0.28</version>
+<!--            <version>8.0.28</version>-->
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
@@ -64,6 +64,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.6</version>
+        </dependency>
+        <!--        validation组件-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
     </dependencies>
 
