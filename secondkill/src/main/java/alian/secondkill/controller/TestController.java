@@ -16,4 +16,8 @@ public class TestController {
         log.info("日志。。。。。。。。");
         return "test";
     }
+    @RequestMapping("/")
+    public String index(){
+        return "login";
+    }
 }
