@@ -22,7 +22,8 @@ public enum RespBeanEnum {
     LOGIN_EMPTY_ERROR(50001,"用户名或者密码为空"),
     LOGIN_MOBILE_ERROR(50002,"用户名不和法"),
     LOGIN_NOT_EXIST_ERROR(50003,"用户不存在"),
-    LOGIN_PASSWD_ERROR(50004,"密码错误")
+    LOGIN_PASSWD_ERROR(50004,"密码错误"),
+    LOGIN_OUTDATE_ERROR(50005,"登录过期")
     ;
 
     private final Integer code;

@@ -4,15 +4,20 @@ import alian.secondkill.entity.User;
 import alian.secondkill.exception.GlobalException;
 import alian.secondkill.mapper.UserMapper;
 import alian.secondkill.service.UserService;
-import alian.secondkill.util.MD5Util;
-import alian.secondkill.util.ValidatorUtil;
+import alian.secondkill.util.*;
 import alian.secondkill.vo.LoginVo;
 import alian.secondkill.vo.RespBean;
 import alian.secondkill.vo.RespBeanEnum;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * <p>
@@ -26,9 +31,12 @@ import org.springframework.util.StringUtils;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
     
     @Override
-    public RespBean login(LoginVo loginVo) {
+    public RespBean login(HttpServletRequest request, HttpServletResponse response, LoginVo loginVo) {
         String mobile = loginVo.getMobile();
         String password = loginVo.getPassword();
         /*
@@ -57,6 +65,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //             return RespBean.error(RespBeanEnum.LOGIN_PASSWD_ERROR);
             throw new GlobalException(RespBeanEnum.LOGIN_PASSWD_ERROR);
         }
-        return RespBean.success();
+
+        // 方法一：直接用cookie进行存储
+//        //生成cookie
+//        String ticket= UUIDUtil.uuid();
+//        request.getSession().setAttribute(ticket,user);
+//        //用户的表示也存入cookie
+//        CookieUtil.setCookie(request,response,"userTicket",ticket);
+        // 方法二：采用redis进行存储，user存储在redis中，userticket存储在cookie中
+        String ticket = UUIDUtil.uuid();
+        redisTemplate.opsForValue().set("user:" + ticket,
+                JsonUtil.object2JsonStr(user));
+        CookieUtil.setCookie(request, response, "userTicket", ticket);
+        return RespBean.success(ticket);
+    }
+
+    /**
+    * @Description: 根据userticket获取user
+    * @Param:
+    * @return:
+    * @Author: alian
+    * @Date: 2022/4/6
+    */
+    @Override
+    public User getByUserTicket(String userTicket, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (StringUtils.isEmpty(userTicket)) {
+            return null;
+        }
+        String userJson = (String) redisTemplate.opsForValue().get("user:" +
+                userTicket);
+        if(userJson==null){
+            // 对user不存的查询直接从定向到login页面
+            response.sendRedirect(request.getContextPath()+"/");
+            return null;
+        }
+        User user = JsonUtil.jsonStr2Object(userJson, User.class);
+        if (null != user) {
+            CookieUtil.setCookie(request,response,"userTicket",userTicket);
+        }
+        return user;
     }
 }

@@ -80,7 +80,7 @@ auto">
         var password = md5(str);
         $.ajax({
             url: "/login/doLogin",
-            type: "POST",
+            type: "GET",
             data: {
                 mobile: $("#mobile").val(),
                 password: password
@@ -89,6 +89,8 @@ auto">
                 layer.closeAll();
                 if (data.code == 200) {
                     layer.msg("成功");
+                    //跳转到商品详细页面
+                    window.location.href = "/goods/toList";
                 } else {
                     layer.msg(data.message);
                 }

@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -34,9 +36,9 @@ public class UserController {
     */
     @ResponseBody
     @RequestMapping("/doLogin")
-    public RespBean dologin(LoginVo loginVo){
+    public RespBean dologin(HttpServletRequest request, HttpServletResponse response, LoginVo loginVo){
         log.info("login接口");
-        return userService.login(loginVo);
+        return userService.login(request,response,loginVo);
     }
 }
 

@@ -33,7 +33,7 @@ public class CodeGenerator {
                 })
                 //策略配置
                 .strategyConfig(builder -> {
-                    builder.addInclude("t_user")
+                    builder.addInclude("t_goods","t_order","t_seckill_order","t_secondkill_goods")
                             .addTablePrefix("t_")//表前缀
                             .serviceBuilder().formatServiceFileName("%sService")//去掉Service的 "I" 前缀
                             .controllerBuilder().enableRestStyle()//restful开启

@@ -5,6 +5,11 @@ import alian.secondkill.vo.LoginVo;
 import alian.secondkill.vo.RespBean;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * <p>
  * 用户表 服务类
@@ -15,5 +20,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<User> {
 
-    RespBean login(LoginVo loginVo);
+    RespBean login(HttpServletRequest request, HttpServletResponse response, LoginVo loginVo);
+
+    public User getByUserTicket(String userTicket, HttpServletRequest request,
+                         HttpServletResponse response) throws ServletException, IOException;
 }

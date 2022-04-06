@@ -68,14 +68,80 @@
 2.类ErrorController方式可以处理所有的异常，包括未进入控制器的错误，比如404,401等错误
 3.如果应用中两者共同存在，则@ControllerAdvice方式处理控制器抛出的异常，类ErrorController方式未进入控制器的异常。
 4.@ControllerAdvice方式可以定义多个拦截方法，拦截不同的异常类，并且可以获取抛出的异常信息，自由度更大
+6. 分布式session
+> 1. 采用cookie和session记录用户信息。
+> 2. 分布式session-用redis存储
+> -  1.使用springsession,添加以下依赖
+```
+<!-- spring data redis 依赖 -->
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+<!-- commons-pool2 对象池依赖 -->
+<dependency>
+<groupId>org.apache.commons</groupId>
+<artifactId>commons-pool2</artifactId>
+</dependency>
+<!-- spring-session 依赖 -->
+<dependency>
+<groupId>org.springframework.session</groupId>
+<artifactId>spring-session-data-redis</artifactId>
+</dependency>
 
-5. 分布式session
-
-秒杀功能
+```
+> - 将用户信息存入Redis
+```
+<!-- spring data redis 依赖 -->
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+<!-- commons-pool2 对象池依赖 -->
+<dependency>
+<groupId>org.apache.commons</groupId>
+<artifactId>commons-pool2</artifactId>
+</dependency
+```
+>！！！需要配置redistemplate的序列化
+```java
+@Configuration
+public class RedisConfig {
+   @Bean
+   public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory
+                                                             connectionFactory){
+      RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+      //key序列器
+      redisTemplate.setKeySerializer(new StringRedisSerializer());
+      //value序列器
+      redisTemplate.setValueSerializer(new
+              GenericJackson2JsonRedisSerializer());
+      //Hash类型 key序列器
+      redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+      //Hash类型 value序列器
+      redisTemplate.setHashValueSerializer(new
+                GenericJackson2JsonRedisSerializer());
+      redisTemplate.setConnectionFactory(connectionFactory);
+      return redisTemplate;
+   }
+}
+```
+7. 查询User信息优化
+>- 每次接口请求都会根据userticket查询用户的信息，进行判断，可以使用HandlerMethodArgumentResolver进行统一处理，
+>- 可以对controller接口包含特定的参数可以提前统一解析并且传递，这是是根据userticket在redis中查询出user信息进行传递。
+>- 在查询用户是否合法的过程中，若用户不和法可以直接通过response.sendRedirect(request.getContextPath()+"/");从定向到login.html页面中去。
+8. 秒杀功能
+> - 商品信息查询API
+> 
+P56
 压力测试
 页面优化
 服务优化
 接口安全
+>
+>
+>
+> IDEA快捷键，Ctrl+Alt+L进行快速格式化，Ctrl+Shift+J快速去空格。
 
 
 
