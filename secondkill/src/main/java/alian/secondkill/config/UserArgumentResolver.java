@@ -39,7 +39,17 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         Class<?> clazz = parameter.getParameterType();
+//        for(c: clazz){
+//            if(c==User.class){
+//                return true;
+//            }
+//        }
+//        return false;
         return clazz == User.class;
+
+
+//        return parameter.getParameterType().isAssignableFrom(User.class);
+//                && parameter.hasParameterAnnotation(CurrentUser.class)
     }
 
     /**
@@ -59,8 +69,11 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
                 webRequest.getNativeRequest(HttpServletRequest.class);
         HttpServletResponse response =
                 webRequest.getNativeResponse(HttpServletResponse.class);
+
         String ticket = CookieUtil.getCookieValue(request, "userTicket");
         if (StringUtils.isEmpty(ticket)) {
+            // 对user不存的查询直接从定向到login页面
+            response.sendRedirect(request.getContextPath()+"/");
             return null;
         }
         return userService.getByUserTicket(ticket, request, response);

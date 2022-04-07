@@ -76,6 +76,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String ticket = UUIDUtil.uuid();
         redisTemplate.opsForValue().set("user:" + ticket,
                 JsonUtil.object2JsonStr(user));
+
+        request.getSession().setAttribute(ticket,user);
         CookieUtil.setCookie(request, response, "userTicket", ticket);
         return RespBean.success(ticket);
     }
@@ -90,6 +92,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getByUserTicket(String userTicket, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (StringUtils.isEmpty(userTicket)) {
+            response.sendRedirect(request.getContextPath()+"/");
             return null;
         }
         String userJson = (String) redisTemplate.opsForValue().get("user:" +

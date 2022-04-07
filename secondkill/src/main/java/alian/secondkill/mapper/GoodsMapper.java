@@ -23,4 +23,12 @@ public interface GoodsMapper extends BaseMapper<Goods> {
     * @Date: 2022/4/7
     */
     List<GoodsVo> findGoodsVo();
+    /** 
+    * @Description: 根据秒杀商品的id获取商品的详细信息
+    * @Param: 
+    * @return: 
+    * @Author: alian
+    * @Date: 2022/4/7
+    */
+    GoodsVo findGoodsVoByGoodsId(Long goodsId);
 }

@@ -23,8 +23,26 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Autowired
     private GoodsMapper goodsMapper;
 
+    /**
+    * @Description: 查询所有逇秒杀商品
+    * @Param:
+    * @return:
+    * @Author: alian
+    * @Date: 2022/4/7
+    */
     @Override
     public List<GoodsVo> findGoodsVo() {
         return goodsMapper.findGoodsVo();
+    }
+    /**
+    * @Description: 查询单个的秒杀商品的信息
+    * @Param:
+    * @return:
+    * @Author: alian
+    * @Date: 2022/4/7
+    */
+    @Override
+    public GoodsVo findGoodsVoByGoodsId(Long goodsId) {
+        return goodsMapper.findGoodsVoByGoodsId(goodsId);
     }
 }

@@ -131,8 +131,8 @@ public class RedisConfig {
 >- 可以对controller接口包含特定的参数可以提前统一解析并且传递，这是是根据userticket在redis中查询出user信息进行传递。
 >- 在查询用户是否合法的过程中，若用户不和法可以直接通过response.sendRedirect(request.getContextPath()+"/");从定向到login.html页面中去。
 8. 秒杀功能
-> - 商品信息查询API
-> 
+> - 秒杀商品信息查询API
+> - 秒杀商品详情查询API
 P56
 压力测试
 页面优化

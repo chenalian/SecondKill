@@ -23,8 +23,13 @@ public enum RespBeanEnum {
     LOGIN_MOBILE_ERROR(50002,"用户名不和法"),
     LOGIN_NOT_EXIST_ERROR(50003,"用户不存在"),
     LOGIN_PASSWD_ERROR(50004,"密码错误"),
-    LOGIN_OUTDATE_ERROR(50005,"登录过期")
+    LOGIN_OUTDATE_ERROR(50005,"登录过期"),
+
+    SECONDKILL_NOSTOCKS_ERROR(50010,"没有库存"),
+    SECONDKILL_REPECT_ERROR(50011,"每件商品限抢购一件")
     ;
+
+
 
     private final Integer code;
     private final String message;
