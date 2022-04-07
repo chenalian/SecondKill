@@ -8,12 +8,16 @@ import alian.secondkill.service.GoodsService;
 import alian.secondkill.service.OrderService;
 import alian.secondkill.service.SeckillOrderService;
 import alian.secondkill.vo.GoodsVo;
+import alian.secondkill.vo.RespBean;
 import alian.secondkill.vo.RespBeanEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -36,36 +40,34 @@ public class SeckillOrderController {
     @Autowired
     private GoodsService goodsService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
     * @Description: 秒杀API
-    * @Param:
+    * @Param: 优化前：929
+     * 秒杀静态化：直接返回数据
     * @return:
     * @Author: alian
     * @Date: 2022/4/7
     */
     @RequestMapping("/doSeckill")
-    public String doSeckill(Model model, User user, Long goodsId) {
-
+    @ResponseBody
+    public RespBean doSeckill(Model model, User user, Long goodsId) {
         model.addAttribute("user", user);
         GoodsVo goods = goodsService.findGoodsVoByGoodsId(goodsId);
         //判断库存
         if (goods.getStockCount() < 1) {
-            model.addAttribute("errmsg", RespBeanEnum.SECONDKILL_NOSTOCKS_ERROR.getMessage());
-            return "seckillFail";
+            return RespBean.error(RespBeanEnum.SECONDKILL_NOSTOCKS_ERROR);
         }
-        //判断是否重复抢购
-        SeckillOrder seckillOrder = seckillOrderService.getOne(new
-                QueryWrapper<SeckillOrder>().eq("user_id", user.getId()).eq(
-                "goods_id",
-                goodsId));
-        if (seckillOrder != null) {
-            model.addAttribute("errmsg", RespBeanEnum.SECONDKILL_REPECT_ERROR.getMessage());
-            return "seckillFail";
+        //判断是否重复抢购-redis中进行查看订单
+        String seckillOrderJson = (String)
+                redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
+        if (!StringUtils.isEmpty(seckillOrderJson)) {
+            return RespBean.error(RespBeanEnum.SECONDKILL_REPECT_ERROR);
         }
         Order order = orderService.seckill(user, goods);
-        model.addAttribute("order", order);
-        model.addAttribute("goods", goods);
-        return "orderDetail";
+        return RespBean.success(order);
     }
 }
 

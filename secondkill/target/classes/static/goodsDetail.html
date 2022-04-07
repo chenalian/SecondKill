@@ -107,7 +107,6 @@
         });
     }
 
-
     //秒杀方法
     function doSecKill(path) {
         $.ajax({
@@ -129,7 +128,6 @@
 
         });
     }
-
     function getResult(goodsId) {
         g_showLoading();
         $.ajax({
@@ -169,11 +167,11 @@
         var goodsId = g_getQueryString("goodsId");
         console.log(goodsId);
         $.ajax({
-            url: '/goods/detail/' + goodsId,
+            url: '/goods/toDetail/' + goodsId,
             type: 'GET',
             success: function (data) {
                 if (data.code == 200) {
-                    render(data.object);
+                    render(data.obj);
                     countDown();
                 } else {
                     layer.msg("客户端请求出错");
@@ -186,7 +184,7 @@
     }
 
     function render(detail) {
-        var user = detail.tuser;
+        var user = detail.user;
         var goodsVo = detail.goodsVo;
         var remainSeconds = detail.remainSeconds;
         if (user) {

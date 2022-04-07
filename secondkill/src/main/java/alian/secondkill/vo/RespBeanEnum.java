@@ -26,7 +26,9 @@ public enum RespBeanEnum {
     LOGIN_OUTDATE_ERROR(50005,"登录过期"),
 
     SECONDKILL_NOSTOCKS_ERROR(50010,"没有库存"),
-    SECONDKILL_REPECT_ERROR(50011,"每件商品限抢购一件")
+    SECONDKILL_REPECT_ERROR(50011,"每件商品限抢购一件"),
+
+    ORDER_NOT_EXIST(50020,"订单不存在")
     ;
 
 

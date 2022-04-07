@@ -1,7 +1,6 @@
 # 工程简介
 > 基于Springboot的秒杀系统
 # 项目架构
-
 1. 数据库表：用户表，商品表，订单表，秒杀商品表，秒杀订单表。
 2. Mybatisplus生成基本的配置。
 3. 对密码进行两次MD5+salt加密，第一次服务器从前端传输到后端进行加密，服务器存入数据库又进行一次加密MD5+salt。
@@ -11,7 +10,6 @@
 7. 秒杀接口：先判断秒杀商品数量是否还存在，验证是否重复下单，在进行生成订单表和秒杀订单表。
 8. 压力测试-jmeter
 9. 多用户进行测试-查看qps
-
 # 项目搭建
 1. lombok是一种可以省去基本的set/get方法和注解插件。
 2. 自定义注解
@@ -133,15 +131,45 @@ public class RedisConfig {
 8. 秒杀功能
 > - 秒杀商品信息查询API
 > - 秒杀商品详情查询API
-P56
-压力测试
-页面优化
-服务优化
-接口安全
->
->
+9. 压力测试
+> - 下载并安装Jmeter。
+> - Jmeter进行压力测试，会出现超卖的情况。
+10. 页面优化
+> - 页面缓存，直接将页面存储在redis中。
+> - 页面静态化，将秒杀商品详情和订单详情页面进行静态化出来。
+11. 解决超卖的问题
+> - 减库存的时候判断库粗是否足够，
+```java
+方法一：不能解决超卖的问题
+SecondkillGoods seckillGoods = seckillGoodsService.getOne(new
+    QueryWrapper<SecondkillGoods>().eq("goods_id",
+    goods.getId()));
+seckillGoods.setStockCount(seckillGoods.getStockCount() - 1);
+boolean update = seckillGoodsService.update(new UpdateWrapper<SecondkillGoods>().set("stock_count",
+    seckillGoods.getStockCount()).eq("id", seckillGoods.getId()).gt("stock_count",
+    0));
+```
+```java
+方法二：可以解决超卖的问题
+SecondkillGoods seckillGoods = seckillGoodsService.getOne(new
+    QueryWrapper<SecondkillGoods>().eq("goods_id",
+    goods.getId()));
+    boolean seckillGoodsResult = seckillGoodsService.update(new UpdateWrapper<SecondkillGoods>()
+    .setSql("stock_count = " + "stock_count-1")
+    .eq("goods_id", goods.getId())
+    .gt("stock_count", 0)
+    );
+    
+    // 减库存的操作必须和判断库存的操作要满足原子性，要不然会出现不一致的问题
+```
+> - 解决同一用户同时秒杀多件商品。
+可以通过数据库建立唯一索引避免
+11. 服务优化
+> - RabbitMQ用做消息队列(centos进行安装)，对流量进行消峰
+> - redis做缓存，存放秒杀列表信息
+>P111
+12. 接口安全
 >
 > IDEA快捷键，Ctrl+Alt+L进行快速格式化，Ctrl+Shift+J快速去空格。
-
 
 

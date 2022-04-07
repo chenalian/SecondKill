@@ -4,20 +4,24 @@ package alian.secondkill.controller;
 import alian.secondkill.entity.User;
 import alian.secondkill.service.GoodsService;
 import alian.secondkill.service.UserService;
+import alian.secondkill.vo.DetailVo;
 import alian.secondkill.vo.GoodsVo;
+import alian.secondkill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -32,51 +36,57 @@ import java.util.Date;
 public class GoodsController {
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private ThymeleafViewResolver thymeleafViewResolver;
 
     /**
      * @Description: 秒杀列表查询
+     * 优化前：1016
+     * 优化1：将秒杀商品页面直接缓存在redis中，若不存在直接放进去，存在的直接放回：1149
      * @Param:
      * @return:
      * @Author: alian
      * @Date: 2022/4/7
      */
-    // 方法一：没有参数拦截器
-//    @RequestMapping("/toList")
-//    public String toLogin(HttpServletRequest request,HttpServletResponse
-//            response, Model model,
-//                          @CookieValue("userTicket") String ticket) {
-//        if (StringUtils.isEmpty(ticket)) {
-//            return "login";
-//        }
-//        // 必须之前判断用户是否存在
-//        User user=userService.getByUserTicket(ticket,request,response);
-//        if (null == user) {
-//            return "login";
-//        }
-//        model.addAttribute("user", user);
-//        return "goodsList";
-//    }
-    // 存在参数拦截器
-    @RequestMapping("/toList")
-    public String toLogin(User user, Model model) {
+    @RequestMapping(value = "/toList", produces = "text/html;charset=utf-8")
+    @ResponseBody
+    public String toLogin(HttpServletRequest request, HttpServletResponse
+            response, Model model, User user) {
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        //Redis中获取页面，如果不为空，直接返回页面
+        String html = (String) valueOperations.get("goodsList");
+        if (!StringUtils.isEmpty(html)) {
+            return html;
+        }
+        // 如果不存在组装成页面存入redis
         model.addAttribute("user", user);
         model.addAttribute("goodsList", goodsService.findGoodsVo());
-        return "goodsList";
+        WebContext context = new WebContext(request, response,
+                request.getServletContext(), request.getLocale(),
+                model.asMap());
+        html = thymeleafViewResolver.getTemplateEngine().process("goodsList",
+                context);
+        if (!StringUtils.isEmpty(html)) {
+            valueOperations.set("goodsList", html, 60, TimeUnit.SECONDS);
+        }
+        return html;
     }
 
     /**
      * @Description: 查询秒杀商品的详细信息
-     * @Param:
+     * @Param: 优化中：资源静态化-前后端分离
      * @return:
      * @Author: alian
      * @Date: 2022/4/7
      */
-    @RequestMapping("/toDetail/{goodsId}")
-    public String toDetail(Model model, User user, @PathVariable Long goodsId) {
-        model.addAttribute("user", user);
+    @RequestMapping(value = "/toDetail/{goodsId}")
+    @ResponseBody
+    public RespBean toDetail(HttpServletRequest request, HttpServletResponse
+            response, Model model, User user,
+                             @PathVariable Long goodsId) {
         GoodsVo goods = goodsService.findGoodsVoByGoodsId(goodsId);
-        model.addAttribute("goods", goods);
-        // 设置秒杀状态和秒杀剩余时间
         Date startDate = goods.getStartDate();
         Date endDate = goods.getEndDate();
         Date nowDate = new Date();
@@ -96,9 +106,12 @@ public class GoodsController {
             secKillStatus = 1;
             remainSeconds = 0;
         }
-        model.addAttribute("secKillStatus", secKillStatus);
-        model.addAttribute("remainSeconds", remainSeconds);
-        return "goodsDetail";
+        DetailVo detailVo = new DetailVo();
+        detailVo.setGoodsVo(goods);
+        detailVo.setUser(user);
+        detailVo.setRemainSeconds(remainSeconds);
+        detailVo.setSecKillStatus(secKillStatus);
+        return RespBean.success(detailVo);
     }
 }
 
