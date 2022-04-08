@@ -98,7 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userJson = (String) redisTemplate.opsForValue().get("user:" +
                 userTicket);
         if(userJson==null){
-            // 对user不存的查询直接从定向到login页面
+//            // 对user不存的查询直接从定向到login页面
             response.sendRedirect(request.getContextPath()+"/");
             return null;
         }

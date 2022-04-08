@@ -27,8 +27,12 @@ public enum RespBeanEnum {
 
     SECONDKILL_NOSTOCKS_ERROR(50010,"没有库存"),
     SECONDKILL_REPECT_ERROR(50011,"每件商品限抢购一件"),
+    SECONDKILL_REQUEST_ERROR(500012,"秒杀地址限制！！！"),
+    SECONDKILL_CAPTCHA_ERROR(500012,"验证码错误！！！"),
 
-    ORDER_NOT_EXIST(50020,"订单不存在")
+
+    ORDER_NOT_EXIST(50020,"订单不存在"),
+    ORDER_LIMIT_ERROR(50021,"访问超过最大限制，请稍后再试")
     ;
 
 

@@ -1,6 +1,7 @@
 package alian.secondkill.service;
 
 import alian.secondkill.entity.SeckillOrder;
+import alian.secondkill.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -12,5 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-04-06
  */
 public interface SeckillOrderService extends IService<SeckillOrder> {
-
+    Long getResult(User user, Long goodsId);
 }

@@ -55,27 +55,37 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     /**
      * @Description: 而resolveArgument方法呢，它只有在supportsParameter方法返回true的情况下才会被调用。
      * 用于处理一些业务，将返回值赋值给Controller层中的这个参数。
+     * 方法一：通过cookie记录分配的userticket
+     * 方法二：通过ThreadLocal记录当前User
      * @Param:
      * @return:
      * @Author: alian
      * @Date: 2022/4/6
      */
-    @Override
+//    @Override
+//    public Object resolveArgument(MethodParameter parameter,
+//                                  ModelAndViewContainer mavContainer,
+//                                  NativeWebRequest webRequest,
+//                                  WebDataBinderFactory binderFactory) throws Exception {
+//        HttpServletRequest request =
+//                webRequest.getNativeRequest(HttpServletRequest.class);
+//        HttpServletResponse response =
+//                webRequest.getNativeResponse(HttpServletResponse.class);
+//
+//        String ticket = CookieUtil.getCookieValue(request, "userTicket");
+//        if (StringUtils.isEmpty(ticket)) {
+//            // 对user不存的查询直接从定向到login页面
+//            response.sendRedirect(request.getContextPath()+"/");
+//            return null;
+//        }
+//
+//        return userService.getByUserTicket(ticket, request, response);
+//    }
     public Object resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request =
-                webRequest.getNativeRequest(HttpServletRequest.class);
-        HttpServletResponse response =
-                webRequest.getNativeResponse(HttpServletResponse.class);
-
-        String ticket = CookieUtil.getCookieValue(request, "userTicket");
-        if (StringUtils.isEmpty(ticket)) {
-            // 对user不存的查询直接从定向到login页面
-            response.sendRedirect(request.getContextPath()+"/");
-            return null;
-        }
-        return userService.getByUserTicket(ticket, request, response);
+        //直接通过
+        return UserContext.getUser();
     }
 }
