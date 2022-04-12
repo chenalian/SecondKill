@@ -3,7 +3,7 @@ package alian.secondkill.controller;
 
 import alian.secondkill.entity.User;
 import alian.secondkill.service.GoodsService;
-import alian.secondkill.service.UserService;
+import alian.secondkill.util.JsonUtil;
 import alian.secondkill.vo.DetailVo;
 import alian.secondkill.vo.GoodsVo;
 import alian.secondkill.vo.RespBean;
@@ -12,15 +12,17 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.context.WebContext;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,36 +46,37 @@ public class GoodsController {
     /**
      * @Description: 秒杀列表查询
      * 优化前：1016
-     * 优化1：将秒杀商品页面直接缓存在redis中，若不存在直接放进去，存在的直接放回：1149
+     * 将列表信息直接存入redis
      * @Param:
      * @return:
      * @Author: alian
      * @Date: 2022/4/7
      */
-    @RequestMapping(value = "/toList", produces = "text/html;charset=utf-8")
+    @RequestMapping(value = "/toList")
     @ResponseBody
-    public String toLogin(HttpServletRequest request, HttpServletResponse
-            response, Model model, User user) {
+    public Map<String,Object> toLogin(HttpServletRequest request, HttpServletResponse
+            response, User user) {
         ValueOperations valueOperations = redisTemplate.opsForValue();
         //Redis中获取页面，如果不为空，直接返回页面
-        String html = (String) valueOperations.get("goodsList");
-        if (!StringUtils.isEmpty(html)) {
-            return html;
+        String goods= (String) valueOperations.get("goodsList");
+        HashMap<String,Object> map=new HashMap<>();
+        if (goods!=null) {
+            List<GoodsVo> goodsVo = (List<GoodsVo>) JsonUtil.jsonToList(goods,GoodsVo.class);
+            map.put("msg","查询成功");
+            map.put("count",goodsVo.size());
+            map.put("code",200);
+            map.put("data",goodsVo);
+            return map;
         }
-        // 如果不存在组装成页面存入redis
-        model.addAttribute("user", user);
-        model.addAttribute("goodsList", goodsService.findGoodsVo());
-        WebContext context = new WebContext(request, response,
-                request.getServletContext(), request.getLocale(),
-                model.asMap());
-        html = thymeleafViewResolver.getTemplateEngine().process("goodsList",
-                context);
-        if (!StringUtils.isEmpty(html)) {
-            valueOperations.set("goodsList", html, 60, TimeUnit.SECONDS);
-        }
-        return html;
-    }
 
+        List<GoodsVo> goodsVo1 = goodsService.findGoodsVo();
+        valueOperations.set("goodsList",JsonUtil.object2JsonStr(goodsVo1),60, TimeUnit.SECONDS);
+        map.put("code",200);
+        map.put("msg","查询成功");
+        map.put("count",goodsVo1.size());
+        map.put("data",goodsVo1);
+        return map;
+    }
     /**
      * @Description: 查询秒杀商品的详细信息
      * @Param: 优化中：资源静态化-前后端分离

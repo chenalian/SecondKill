@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 /**
  * <p>
  * 用户表 前端控制器
@@ -35,7 +37,7 @@ public class UserController {
     * @Date: 2022/4/5
     */
     @ResponseBody
-    @RequestMapping("/doLogin")
+    @RequestMapping(value = "/doLogin",method = GET)
     public RespBean dologin(HttpServletRequest request, HttpServletResponse response, LoginVo loginVo){
         log.info("login接口");
         return userService.login(request,response,loginVo);

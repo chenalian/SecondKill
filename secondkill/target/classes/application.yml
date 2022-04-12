@@ -1,5 +1,9 @@
 #应用名称
 spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
   #RabbitMQ
   rabbitmq:
    #服务器地址

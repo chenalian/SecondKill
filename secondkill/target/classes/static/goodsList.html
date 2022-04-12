@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>商品列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="/dist/css/layui.css" media="all"/>
+    <script  src="/dist/layui.js" charset="utf-8"></script>
+
+</head>
+<body>
+<!--测试<br/>-->
+<table class="layui-hide" id="test"></table>
+<!--测试2-->
+
+<script>
+    //ajax全局参数设置 OK
+
+    layui.use('table', function() {
+        var table = layui.table;
+        // 设置lsyui跨域携带cookie
+        $ = layui.$;
+        $.ajaxSetup({
+            xhrFields: {
+                withCredentials: true
+            }
+        });//
+        // console.log(table)
+        table.render({
+            elem: '#test'
+            , url: '/goods/toList'
+            , title: '博客管理'
+            // ,cellMinWidth: 80
+            , cols: [[
+                {field: 'goodsName', title: '商品名称', width: 140, }
+                , {
+                    field: 'goodsImg',
+                    templet: function (item) {
+                        return '<img onclick="showimg(this)"  width: 200px; height: 200px;" src="' + item.goodsImg + '">';
+                    }
+                }
+                , {field: 'goodsPrice', title: '商品原价',width: 140, }
+                , {field: 'seckillPrice', title: '秒杀价',width: 140, }
+                , {field: 'stockCount', title: '库存数量', width: 140, }
+                , {field: 'goodsDetail', title: '详情',
+                    templet: function (item) {
+                        // return '<img onclick="showimg(this)"  width: 200px; height: 200px;" src="' + item.goodsImg + '">';
+                        return '<a href="goodsDetail.html?goodsId='+item.id+'">详情</a>';
+                    }
+
+                }
+            ]]
+            , page: true,
+            response: {
+                statusName: 'code', //规定返回的状态码字段为code
+                statusCode: 200 //规定成功的状态码味200
+            },
+            parseData: function (res) {
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "data": res.data, //解析数据列表
+                    "count":res.count
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
