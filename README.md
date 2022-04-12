@@ -1,12 +1,9 @@
 # SecondKill
 基于Springboot的秒杀系统
 # 版本3
-工程简介
-基于Springboot的秒杀系统
-
-配置前后端分离
-配置跨域处理，跨域也会就收cookie
-
+1. 配置前后端分离
+> 配置跨域处理，跨域也会就收cookie
+```java
 /**
  * @program: secondkill
  * @author: alian
@@ -49,10 +46,17 @@ public class CorsConfig {
         return new CorsFilter(source);
     }
 }
-前后设置跨域处理
+
+
+```
+2. 前后设置跨域处理
+```javascript
  $.ajaxSetup({
             xhrFields: {
                 withCredentials: true
             }
         });//
-直接将html文件放入nginx服务器下面就能够访问
+```
+3. 直接将html文件放入nginx服务器下面就能够访问
+
+
