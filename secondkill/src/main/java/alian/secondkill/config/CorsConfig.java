@@ -9,23 +9,24 @@ package alian.secondkill.config;
 
 
 import org.springframework.context.annotation.Bean;
-        import org.springframework.context.annotation.Configuration;
-        import org.springframework.web.cors.CorsConfiguration;
-        import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-        import org.springframework.web.filter.CorsFilter;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
-/** 
-* @Description: 允许跨域携带cookie
-* @Param: 
-* @return: 
-* @Author: alian
-* @Date: 2022/4/12
-*/
+/**
+ * @Description: 允许跨域携带cookie
+ * @Param:
+ * @return:
+ * @Author: alian
+ * @Date: 2022/4/12
+ */
 @Configuration
 public class CorsConfig {
     private CorsConfiguration buildConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*"); // 1允许任何域名使用
+//        corsConfiguration.addAllowedOrigin("*"); // 1允许任何域名使用
+        corsConfiguration.addAllowedOriginPattern("*");// 允许跨域将cookie返回给前端
         corsConfiguration.addAllowedHeader("*"); // 2允许任何头
         corsConfiguration.addAllowedMethod("*"); // 3允许任何方法（post、get等）
         corsConfiguration.setAllowCredentials(true);//支持安全证书。跨域携带cookie需要配置这个
@@ -36,7 +37,7 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", buildConfig()); // 4
+        source.registerCorsConfiguration("/**", buildConfig()); // 对接口配置跨域设置
         return new CorsFilter(source);
     }
 }
