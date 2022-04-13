@@ -5,12 +5,9 @@
     <meta charset="UTF-8">
     <title>登录</title>
     <!-- jquery -->
-    <script type="text/javascript" src="./js/jquery.min.js"></script>
-    <!-- bootstrap -->
-    <link rel="stylesheet" type="text/css" href="./bootstrap/css/bootstrap.min.css"/>
-    <script type="text/javascript" src="./bootstrap/js/bootstrap.min.js"></script>
+   <script type="text/javascript" src="./js/jquery.min.js"></script>
     <!-- layer -->
-    <script type="text/javascript" src="./layer/layer.js"></script>
+    <!-- <script type="text/javascript" src="./layer/layer.js"></script> -->
     <!-- common.js -->
     <script type="text/javascript" src="./js/common.js"></script>
     <!-- jquery-validator -->
@@ -18,55 +15,66 @@
     <script type="text/javascript" src="./jquery-validation/localization/messages_zh.min.js"></script>
     <!-- md5.js -->
     <script type="text/javascript" src="./js/md5.min.js"></script>
+	<!-- layui -->
+	<script src="./dist/layui.js" charset="utf-8"></script>
+    <!-- xadmin的css -->
+	<link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/login.css">
+	<link rel="stylesheet" href="./css/xadmin.css">
+	
+	 <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
-<body>
-<form name="loginForm" id="loginForm" method="post" style="wid50%; margin:0
-auto">
-    <h2 style="text-align:center; margin-bottom: 20px">用户登录</h2>
-    <div class="form-group">
-        <div class="row">
-            <label class="form-label col-md-4">请输入手机号码</label>
-            <div class="col-md-5">
-                <input id="mobile" name="mobile" class="form-control"
-                       type="text" placeholder="手机号码" required="true"
-                       minlength="11" maxlength="11"/>
-            </div>
-            <div class="col-md-1">
-            </div>
-        </div>
+<body class="login-bg">
+    
+    <div class="login layui-anim layui-anim-up">
+        <div class="message">秒杀系统</div>
+        <div id="darkbannerwrap"></div>
+        
+        <form method="post" class="layui-form" name="loginForm" id="loginForm">
+            <input name="mobile" id="mobile" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+            <hr class="hr15">
+            <input id="password" name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15">
+            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit" onclick="login()">
+            <hr class="hr20" >
+        </form>
     </div>
-    <div class="form-group">
-        <div class="row">
-            <label class="form-label col-md-4">请输入密码</label>
-            <div class="col-md-5">
-                <input id="password" name="password" class="form-control"
-                       type="password" placeholder="密码"
-                       required="true" minlength="6" maxlength="16"/>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-5">
-            <button class="btn btn-primary btn-block" type="reset"
-                    onclick="reset()">重置
-            </button>
-        </div>
-        <div class="col-md-5">
-            <button class="btn btn-primary btn-block" type="submit"
-                    onclick="login()">登录
-            </button>
-        </div>
-    </div>
-</form>
+
+    <!-- <script>
+        $(function  () {
+            layui.use('form', function(){
+              var form = layui.form;
+              // layer.msg('玩命卖萌中', function(){
+              //   //关闭后的操作
+              //   });
+              //监听提交
+              form.on('submit(login)', function(data){
+                // alert(888)
+                layer.msg(JSON.stringify(data.field),function(){
+                    location.href='index.html'
+                });
+                return false;
+              });
+            });
+        })
+    </script> -->
 </body>
 <script>
+		$.ajaxSetup({
+            xhrFields: {
+                withCredentials: true
+            }
+        });//
     function login() {
         $("#loginForm").validate({
             submitHandler: function (form) {
                 doLogin();
             }
         });
-        // doLogin();
+        doLogin();
     }
 
     function doLogin() {
@@ -79,7 +87,6 @@ auto">
         var str = "" + salt.charAt(0) + salt.charAt(2) + inputPass +
             salt.charAt(5) + salt.charAt(4);
         var password = md5(str);
-        console.log("测试")
         $.ajax({
             url: "http://localhost:8080/login/doLogin",
             type: "GET",
